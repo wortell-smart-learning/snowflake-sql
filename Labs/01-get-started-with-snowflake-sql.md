@@ -76,11 +76,11 @@ As you just saw, columns in a table are defined as specific data types, which af
 1. Replace the existing query with the following code, and run it:
 
     ```
-    SELECT ProductID + ': ' + Name AS ProductName
+    SELECT ProductID || ': ' || Name AS ProductName
     FROM SalesLT.Product; 
     ```
 
-2. Note that this query returns an error. The **+** operator can be used to *concatenate* text-based values, or *add* numeric values; but in this case there's one numeric value (**ProductID**) and one text-based value (**Name**), so it's unclear how the operator should be applied.
+2. The **||** operator can be used to *concatenate* text-based values or numeric values; in this case there's one numeric value (**ProductID**) and one text-based value (**Name**), so an implicit conversion is done from numeric to text.
 3. Modify the query as follows, and re-run it:
 
     ```
@@ -88,43 +88,43 @@ As you just saw, columns in a table are defined as specific data types, which af
     FROM SalesLT.Product; 
     ```
 
-4. Note that the effect of the **CAST** function is to change the numeric **ProductID** column into a **varchar** (variable-length character data) value that can be concatenated with other text-based values.
+4. Note that the effect of the **CAST** function is to explicitly change the numeric **ProductID** column into a **varchar** (variable-length character data) value before being concatenated with other text-based values.
 
-5. Modify the query to replace the **CAST** function with a **CONVERT** function as shown below, and then re-run it:
+5. Modify the query to replace the **CAST** function with a shorter equivalent as shown below, and then re-run it:
 
     ```
-    SELECT CONVERT(varchar(5), ProductID) + ': ' + Name AS ProductName
+    SELECT ProductID::varchar(5) || ': ' || Name AS ProductName
     FROM SalesLT.Product; 
     ```
 
-6. Note that the results of using **CONVERT** are the same as for **CAST**. The **CAST** function is an ANSI standard part of the SQL language that is available in most database systems, while **CONVERT** is a SQL Server specific function.
+6. Note that the results of using this conversion are the same as for **CAST**. The **CAST** function is an ANSI standard part of the SQL language that is available in most database systems, while **::** is Snowflake specific syntax. 
 
-7. Another key difference between the two functions is that **CONVERT** includes an additional parameter that can be useful for formatting date and time values when converting them to text-based data. For example, replace the existing query with the following code and run it.
+7. Replace the existing query with the following code, and run it.
 
     ```
-    SELECT SellStartDate,
-       CONVERT(nvarchar(30), SellStartDate) AS ConvertedDate,
-	   CONVERT(nvarchar(30), SellStartDate, 126) AS ISO8601FormatDate
+    SELECT Name, TO_VARCHAR(SellStartDate, 'yyyy-mm-dd hh24:mi:ss') AS NumericSize
     FROM SalesLT.Product; 
     ```
 
-8. Replace the existing query with the following code, and run it.
+8. Note that if you would like to convert dates or datetimes to a specific format you can use the function **TO_VARCHAR** with the required format.
+
+9. Replace the existing query with the following code, and run it.
 
     ```
     SELECT Name, CAST(Size AS Integer) AS NumericSize
     FROM SalesLT.Product; 
     ```
 
-9. Note that an error is returned because some **Size** values are not numeric (for example, some item sizes are indicated as *S*, *M*, or *L*).
+10. Note that an error is returned because some **Size** values are not numeric (for example, some item sizes are indicated as *S*, *M*, or *L*).
 
-10. Modify the query to use a **TRY_CAST** function, as shown here.
+11. Modify the query to use a **TRY_CAST** function, as shown here.
 
     ```
     SELECT Name, TRY_CAST(Size AS Integer) AS NumericSize
     FROM SalesLT.Product; 
     ```
 
-11. Run the query and note that the numeric **Size** values are converted successfully to integers, but that non-numeric sizes are returned as *NULL*.
+12. Run the query and note that the numeric **Size** values are converted successfully to integers, but that non-numeric sizes are returned as *NULL*.
 
 ## Handle NULL values
 
@@ -133,22 +133,22 @@ We've seen some examples of queries that return *NULL* values. *NULL* is general
 1. Modify the existing query as shown here:
 
     ```
-    SELECT Name, ISNULL(TRY_CAST(Size AS Integer),0) AS NumericSize
+    SELECT Name, IFNULL(TRY_CAST(Size AS Integer),0) AS NumericSize
     FROM SalesLT.Product;
     ```
 
-2. Run the query and view the results. Note that the **ISNULL** function replaces *NULL* values with the specified value, so in this case, sizes that are not numeric (and therefore can't be converted to integers) are returned as **0**.
+2. Run the query and view the results. Note that the **IFNULL** function replaces *NULL* values with the specified value, so in this case, sizes that are not numeric (and therefore can't be converted to integers) are returned as **0**.
 
-    In this example, the **ISNULL** function is applied to the output of the inner **TRY_CAST** function, but you can also use it to deal with *NULL* values in the source table.
+    In this example, the **IFNULL** function is applied to the output of the inner **TRY_CAST** function, but you can also use it to deal with *NULL* values in the source table.
 
 3. Replace the query with the following code to handle *NULL* values for **Color** and **Size** values in the source table:
 
     ```
-    SELECT ProductNumber, ISNULL(Color, '') + ', ' + ISNULL(Size, '') AS ProductDetails
+    SELECT ProductNumber, IFNULL(Color, '') || ', ' || IFNULL(Size, '') AS ProductDetails
     FROM SalesLT.Product;
     ```
 
-    The **ISNULL** function replaces *NULL* values with a specified literal value. Sometimes, you may want to achieve the opposite result by replacing an explicit value with *NULL*. To do this, you can use the **NULLLIF** function.
+    The **IFNULL** function replaces *NULL* values with a specified literal value. Sometimes, you may want to achieve the opposite result by replacing an explicit value with *NULL*. To do this, you can use the **NULLLIF** function.
 
 4. Try the following query, which replaces the **Color** value "Multi" to *NULL*.
 
@@ -168,7 +168,7 @@ We've seen some examples of queries that return *NULL* values. *NULL* is general
 
     The previous query returns the last date on which the product selling status was updated, but doesn't actually tell us the sales status itself. To determine that, we'll need to check the dates to see if the **SellEndDate** is *NULL*. To do this, you can use a **CASE** expression in the **SELECT** clause to check for *NULL* **SellEndDate** values. The **CASE** expression has two variants: a *simple* **CASE** what evaluates a specific column or value, or a *searched* **CASE** that evaluates one or more expressions.
 
-    In this example, or **CASE** experssion must determine if the **SellEndDate** column is *NULL*. Typically, when you are trying to check the value of a column you can use the **=** operator; for example the predicate **SellEndDate = '01/01/2005'** returns **True** if the **SellEndDate** value is *01/01/2005*, and **False** otherwise. However, when dealing with *NULL* values, the default behavior may not be what you expect. Remember that *NULL* actually means *unknown*, so using the **=** operator to compare two unknown values always results in a value of *NULL* - semantically, it's impossible to know if one unknown value is the same as another. To check to see if a value is *NULL*, you must use the **IS NULL** predicate; and conversely to check that a value is not *NULL* you can use the **IS NOT NULL** predicate.
+    In this example, our **CASE** expression must determine if the **SellEndDate** column is *NULL*. Typically, when you are trying to check the value of a column you can use the **=** operator; for example the predicate **SellEndDate = '01/01/2005'** returns **True** if the **SellEndDate** value is *01/01/2005*, and **False** otherwise. However, when dealing with *NULL* values, the default behavior may not be what you expect. Remember that *NULL* actually means *unknown*, so using the **=** operator to compare two unknown values always results in a value of *NULL* - semantically, it's impossible to know if one unknown value is the same as another. To check to see if a value is *NULL*, you must use the **IS NULL** predicate; and conversely to check that a value is not *NULL* you can use the **IS NOT NULL** predicate.
 
 6. Run the following query, which includes *searched* **CASE** that uses an **IS NULL** expression to check for *NULL* **SellEndDate** values.
 
@@ -183,7 +183,7 @@ We've seen some examples of queries that return *NULL* values. *NULL* is general
 
     The previous query used a *searched* **CASE** expression, which begins with a **CASE** keyword, and includes one or more **WHEN...THEN** expressions with the values and predicates to be checked. An **ELSE** expression provides a value to use if none of the **WHEN** conditions are matched, and the **END** keyword denotes the end of the **CASE** expression, which is aliased to a column name for the result using an **AS** expression.
     
-    In some queries, it's more appropriate to use a *simple* **CASE** expression that applies multiple **WHERE...THEN** predictes to the same value.
+    In some queries, it's more appropriate to use a *simple* **CASE** expression that applies multiple **WHEN...THEN** predictes to the same value.
 
 7. Run the following query to see an example of a *simple* **CASE** expression that produced different results depending on the **Size** column value.
 
@@ -194,7 +194,7 @@ We've seen some examples of queries that return *NULL* values. *NULL* is general
 			WHEN 'M' THEN 'Medium'
 			WHEN 'L' THEN 'Large'
 			WHEN 'XL' THEN 'Extra-Large'
-			ELSE ISNULL(Size, 'n/a')
+			ELSE IFNULL(Size, 'n/a')
 		END AS ProductSize
     FROM SalesLT.Product;
     ```
@@ -212,7 +212,7 @@ Now that you've seen some examples of **SELECT** statements that retrieve data f
 Adventure Works Cycles sells directly to retailers, who then sell products to consumers. Each retailer that is an Adventure Works customer has provided a named contact for all communication from Adventure Works. The sales manager at Adventure Works has asked you to generate some reports containing details of the company’s customers to support a direct sales campaign.
 
 1. Retrieve customer details
-    - Familiarize yourself with the **SalesLT.Customer** table by writing a Transact-SQL query that retrieves all columns for all customers.
+    - Familiarize yourself with the **SalesLT.Customer** table by writing a SQL query that retrieves all columns for all customers.
 2. Retrieve customer name data
     - Create a list of all customer contact names that includes the title, first name, middle name (if any), last name, and suffix (if any) of all customers.
 3. Retrieve customer names and phone numbers
@@ -230,7 +230,7 @@ As you continue to work with the Adventure Works customer data, you must create 
 2. Retrieve a list of sales order revisions
     - The **SalesLT.SalesOrderHeader** table contains records of sales orders. You have been asked to retrieve data for a report that shows:
         - The sales order number and revision number in the format <Order Number> (<Revision>) – for example SO71774 (2).
-        - The order date converted to ANSI standard *102* format  (*yyyy.mm.dd* – for example *2015.01.31*).
+        - The order date converted to the following format  (*yyyy.mm.dd* – for example *2015.01.31*).
 
 ### Challenge 3: Retrieve customer contact details
 
@@ -282,7 +282,7 @@ This section contains suggested solutions for the challenge queries.
 3. Retrieve customer names and phone numbers:
 
     ```
-    SELECT Salesperson, Title + ' ' + LastName AS CustomerName, Phone
+    SELECT Salesperson, Title || ' ' || LastName AS CustomerName, Phone
     FROM SalesLT.Customer;
     ```
 
@@ -291,15 +291,15 @@ This section contains suggested solutions for the challenge queries.
 1. Retrieve a list of customer companies:
 
     ```
-    SELECT CAST(CustomerID AS varchar) + ': ' + CompanyName AS CustomerCompany
+    SELECT CAST(CustomerID AS varchar) || ': ' || CompanyName AS CustomerCompany
     FROM SalesLT.Customer;
     ```
 
 2. Retrieve a list of sales order revisions:
 
     ```
-    SELECT SalesOrderNumber + ' (' + STR(RevisionNumber, 1) + ')' AS OrderRevision,
-	   CONVERT(nvarchar(30), OrderDate, 102) AS OrderDate
+    SELECT SalesOrderNumber || ' (' || RevisionNumber || ')' AS OrderRevision,
+	   TO_VARCHAR(OrderDate, 'yyyy.mm.dd') AS OrderDate
     FROM SalesLT.SalesOrderHeader;
     ```
 
@@ -308,7 +308,7 @@ This section contains suggested solutions for the challenge queries.
 1. Retrieve customer contact names with middle names if known:
 
     ```
-    SELECT FirstName + ' ' + ISNULL(MiddleName + ' ', '') + LastName AS CustomerName
+    SELECT FirstName || ' ' || IFNULL(MiddleName || ' ', '') || LastName AS CustomerName
     FROM SalesLT.Customer;
     ```
 
