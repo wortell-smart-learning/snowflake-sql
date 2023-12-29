@@ -8,7 +8,7 @@ lab:
 
 In this lab, you'll use subqueries to retrieve data from tables in the **adventureworks** database. For your reference, the following diagram shows the tables in the database (you may need to resize the pane to see them clearly).
 
-![An entity relationship diagram of the adventureworks database](./images/adventureworks-erd.png)
+![An entity relationship diagram of the adventureworks database](./Images/adventureworks-erd.png)
 
 > **Note**: If you're familiar with the standard **AdventureWorks** sample database, you may notice that in this lab we are using a simplified version that makes it easier to focus on learning Snowflake SQL syntax.
 
