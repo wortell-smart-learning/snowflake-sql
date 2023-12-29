@@ -33,10 +33,10 @@ Snowflake SQL provides a large number of functions that you can use to extract a
 
     ```
     SELECT YEAR(SellStartDate) AS SellStartYear,
-           DATENAME(mm,SellStartDate) AS SellStartMonth,
+           TO_VARCHAR(SellStartDate, 'MMMM') AS SellStartMonth,
            DAY(SellStartDate) AS SellStartDay,
-           DATENAME(dw, SellStartDate) AS SellStartWeekday,
-           DATEDIFF(yy,SellStartDate, GETDATE()) AS YearsSold,
+           TO_VARCHAR(SellStartDate, 'DY') AS SellStartWeekday,
+           DATEDIFF(year,SellStartDate, GETDATE()) AS YearsSold,
            ProductID,
            Name
     FROM SalesLT.Product
@@ -45,14 +45,14 @@ Snowflake SQL provides a large number of functions that you can use to extract a
 
 5. Run the query and review the results.
 
-    Note that the **DATENAME** function returns a different value depending on the *datepart* parameter that is passed to it. In this example, **mm** returns the month name, and **dw** returns the weekday name.
+    Note that the **TO_VARCHAR** function returns a different value depending on the *format* parameter that is passed to it. In this example, **MMMM** returns the full month name, and **DY** returns the abbreviated weekday name.
 
-    Note also that the **DATEDIFF** function returns the specified time interval between and start date and an end date. In this case the interval is measured in years (**yy**), and the end date is determined by the **GETDATE** function; which when used with no parameters returns the current date and time.
+    Note also that the **DATEDIFF** function returns the specified time interval between and start date and an end date. In this case the interval is measured in years (**year**), and the end date is determined by the **GETDATE** function; which when used with no parameters returns the current date and time.
 
 6. Replace the existing query with the following code.
 
     ```
-    SELECT CONCAT(FirstName + ' ', LastName) AS FullName
+    SELECT CONCAT(FirstName || ' ', LastName) AS FullName
     FROM SalesLT.Customer;
     ```
 
@@ -86,14 +86,14 @@ Snowflake SQL provides a large number of functions that you can use to extract a
     ```
     SELECT Name, Size AS NumericSize
     FROM SalesLT.Product
-    WHERE ISNUMERIC(Size) = 1;
+    WHERE TRY_TO_NUMBER(Size) IS NOT NULL;
     ```
 
 2. Run the query and note that the results only products with a numeric size.
-3. Replace the query with the following code, which nests the **ISNUMERIC** function used previously in an **IIF** function; which in turn evaluates the result of the **ISNUMERIC** function and returns *Numeric* if the result is **1** (*true*), and *Non-Numeric* otherwise.
+3. Replace the query with the following code, which nests the **TRY_TO_NUMBER** function used previously in an **IFF** function; which in turn evaluates the result of the **TRY_TO_NUMBER** function and returns *Numeric* if the result is not **NULL** (*true*), and *Non-Numeric* otherwise.
 
     ```
-    SELECT Name, IIF(ISNUMERIC(Size) = 1, 'Numeric', 'Non-Numeric') AS SizeType
+    SELECT Name, IFF(TRY_TO_NUMBER(Size) IS NOT NULL, 'Numeric', 'Non-Numeric') AS SizeType
     FROM SalesLT.Product;
     ```
 
@@ -103,13 +103,13 @@ Snowflake SQL provides a large number of functions that you can use to extract a
     ```
     SELECT prd.Name AS ProductName,
            cat.Name AS Category,
-           CHOOSE (cat.ParentProductCategoryID, 'Bikes','Components','Clothing','Accessories') AS ProductType
+           DECODE (cat.ParentProductCategoryID, 1, 'Bikes', 2, 'Components', 3, 'Clothing', 4, 'Accessories') AS ProductType
     FROM SalesLT.Product AS prd
     JOIN SalesLT.ProductCategory AS cat
         ON prd.ProductCategoryID = cat.ProductCategoryID;
     ```
 
-6. Run the query and note that the **CHOOSE** function returns the value in the ordinal position in a list based on the a specified index value. The list index is 1-based so in this query the function returns *Bikes* for category 1, *Components* for category 2, and so on.
+6. Run the query and note that the **DECODE** function labels the attribute based on a list of values and results.
 
 ## Use aggregate functions
 
@@ -169,7 +169,7 @@ Aggregate functions are especially useful when combined with the **GROUP BY** cl
 5. Modify the query as follows to use an outer join:
 
     ```
-    SELECT c.Salesperson, ISNULL(SUM(oh.SubTotal), 0.00) AS SalesRevenue
+    SELECT c.Salesperson, IFNULL(SUM(oh.SubTotal), 0.00) AS SalesRevenue
     FROM SalesLT.Customer c
     LEFT JOIN SalesLT.SalesOrderHeader oh
         ON c.CustomerID = oh.CustomerID
@@ -264,7 +264,7 @@ This section contains suggested solutions for the challenge queries.
            ROUND(Freight, 2) AS FreightCost,
            LOWER(ShipMethod) AS ShippingMethod,
            YEAR(ShipDate) AS ShipYear,
-           DATENAME(mm, ShipDate) AS ShipMonth,
+           TO_VARCHAR(ShipDate, 'MMMM') AS ShipMonth,
            DAY(ShipDate) AS ShipDay
     FROM SalesLT.SalesOrderHeader;
     ```
