@@ -19,7 +19,7 @@ We'll use the **AdventureWorks** database in this lab, so let's start by explori
 5. Review the query results, which consist of 100 rows - each row representing a product that is sold by the fictitious *Adventure Works Cycles* company.
 6. Explore the other tables in the database, which contain information about product details, customers, and sales orders. The tables are related through primary and foreign keys, as shown here (you may need to resize the pane to see them clearly):
 
-    ![An entity relationship diagram of the AdventureWorks database](./images/adventureworks-erd.png)
+    ![An entity relationship diagram of the AdventureWorks database](./Images/adventureworks-erd.png)
 
 > **Note**: If you're familiar with the standard **AdventureWorks** sample database, you may notice that in this lab we are using a simplified version that makes it easier to focus on learning Snowflake SQL syntax.
 
