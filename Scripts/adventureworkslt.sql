@@ -4508,3 +4508,40 @@ INSERT INTO SalesLT.SalesOrderHeader (SalesOrderID, RevisionNumber, OrderDate, D
 ,(71938, 2, CAST('2008-06-01T00:00:00.000' AS DateTime), CAST('2008-06-13T00:00:00.000' AS DateTime), CAST('2008-06-08T00:00:00.000' AS DateTime), 5, 0, 'PO8468183315', '10-4020-000016', 29546, 635, 635, 'CARGO TRANSPORT 5', NULL, 88812.8625, 7105.0290, 2220.3216, NULL, 'a36ee74a-cf0d-4024-a1ce-4eaffd1f85f0', CAST('2008-06-08T00:00:00.000' AS DateTime))
 ,(71946, 2, CAST('2008-06-01T00:00:00.000' AS DateTime), CAST('2008-06-13T00:00:00.000' AS DateTime), CAST('2008-06-08T00:00:00.000' AS DateTime), 5, 0, 'PO8961158629', '10-4020-000466', 29741, 660, 660, 'CARGO TRANSPORT 5', NULL, 38.9536, 3.1163, 0.9738, NULL, '10e3129d-657f-46f9-86f5-cedd79b1901c', CAST('2008-06-08T00:00:00.000' AS DateTime))
 ;
+
+ALTER TABLE SalesLT.CustomerAddress   ADD  CONSTRAINT FK_CustomerAddress_Address_AddressID FOREIGN KEY(AddressID)
+REFERENCES SalesLT.Address (AddressID);
+
+ALTER TABLE SalesLT.CustomerAddress   ADD  CONSTRAINT FK_CustomerAddress_Customer_CustomerID FOREIGN KEY(CustomerID)
+REFERENCES SalesLT.Customer (CustomerID);
+
+ALTER TABLE SalesLT.Product   ADD  CONSTRAINT FK_Product_ProductCategory_ProductCategoryID FOREIGN KEY(ProductCategoryID)
+REFERENCES SalesLT.ProductCategory (ProductCategoryID);
+
+ALTER TABLE SalesLT.Product   ADD  CONSTRAINT FK_Product_ProductModel_ProductModelID FOREIGN KEY(ProductModelID)
+REFERENCES SalesLT.ProductModel (ProductModelID);
+
+ALTER TABLE SalesLT.ProductCategory   ADD  CONSTRAINT FK_ProductCategory_ProductCategory_ParentProductCategoryID_ProductCategoryID FOREIGN KEY(ParentProductCategoryID)
+REFERENCES SalesLT.ProductCategory (ProductCategoryID);
+
+ALTER TABLE SalesLT.ProductModelProductDescription   ADD  CONSTRAINT FK_ProductModelProductDescription_ProductDescription_ProductDescriptionID FOREIGN KEY(ProductDescriptionID)
+REFERENCES SalesLT.ProductDescription (ProductDescriptionID);
+
+ALTER TABLE SalesLT.ProductModelProductDescription   ADD  CONSTRAINT FK_ProductModelProductDescription_ProductModel_ProductModelID FOREIGN KEY(ProductModelID)
+REFERENCES SalesLT.ProductModel (ProductModelID);
+
+ALTER TABLE SalesLT.SalesOrderDetail   ADD  CONSTRAINT FK_SalesOrderDetail_Product_ProductID FOREIGN KEY(ProductID)
+REFERENCES SalesLT.Product (ProductID);
+
+ALTER TABLE SalesLT.SalesOrderDetail   ADD  CONSTRAINT FK_SalesOrderDetail_SalesOrderHeader_SalesOrderID FOREIGN KEY(SalesOrderID)
+REFERENCES SalesLT.SalesOrderHeader (SalesOrderID)
+ON DELETE CASCADE;
+
+ALTER TABLE SalesLT.SalesOrderHeader   ADD  CONSTRAINT FK_SalesOrderHeader_Address_BillTo_AddressID FOREIGN KEY(BillToAddressID)
+REFERENCES SalesLT.Address (AddressID);
+
+ALTER TABLE SalesLT.SalesOrderHeader   ADD  CONSTRAINT FK_SalesOrderHeader_Address_ShipTo_AddressID FOREIGN KEY(ShipToAddressID)
+REFERENCES SalesLT.Address (AddressID);
+
+ALTER TABLE SalesLT.SalesOrderHeader   ADD  CONSTRAINT FK_SalesOrderHeader_Customer_CustomerID FOREIGN KEY(CustomerID)
+REFERENCES SalesLT.Customer (CustomerID);
