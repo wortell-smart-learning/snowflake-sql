@@ -16,11 +16,9 @@ In this lab, you'll use table expressions to query the **adventureworks** databa
 
 You use the CREATE VIEW statement to create a view.
 
-1. Start Azure Data Studio, and create a new query (you can do this from the **File** menu or on the *welcome* page).
+1. SCeate a new worksheet and connect to the database en warehouse
 
-1. In the new **SQLQuery_...** pane, use the **Connect** button to connect the query to the **AdventureWorks** saved connection.
-
-1. After you've connected to your database, you can query it.  Let's fetch some data. Enter the following query to retrieve all products that are classified as road bikes (*ProductCategoryID=6*) from the **SalesLT.Products** table:
+1. Let's fetch some data. Enter the following query to retrieve all products that are classified as road bikes (*ProductCategoryID=6*) from the **SalesLT.Products** table:
 
     ```
     SELECT ProductID, Name, ListPrice
