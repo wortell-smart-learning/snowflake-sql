@@ -16,7 +16,7 @@ In this lab, you'll insert, update, and delete data in the **adventureworks** da
 
 You use the **INSERT** statement to insert data into a table.
 
-1. Create a new worksheet and connect it to the database and warehouse.
+1. Create a new worksheet, name it **Create and fill table** and connect it to the database and warehouse.
 2. Enter the following code to create a new table named **SalesLT.CallLog**, which we'll use in this lab.
 
     ```
@@ -27,39 +27,39 @@ You use the **INSERT** statement to insert data into a table.
         SalesPerson nvarchar(256) NOT NULL,
         CustomerID int NOT NULL REFERENCES SalesLT.Customer(CustomerID),
         PhoneNumber nvarchar(25) NOT NULL,
-        Notes nvarchar(max) NULL
+        Notes nvarchar(100) NULL
     );
     ```
 
 3. Use the **&#x23f5;Run** button to run the code and create the table. Don't worry too much about the details of the **CREATE TABLE** statement - it creates a table with some fields that we'll use in subsequent tasks to insert, update, and delete data.
-4. Create a new query, so you have two **SQLQuery_...** panes, and in the new pane, enter the following code to query the  **SalesLT.CallLog** you just created.
+4. Create a new worksheet, name it **Select from table**, and in the new tab connect to the database and warehouse, and enter the following code to query the  **SalesLT.CallLog** you just created.
 
     ```
     SELECT * FROM SalesLT.CallLog;
     ```
 
 5. Run the **SELECT** query and view the results, which show the columns in the new table but no rows, because the table is empty.
-6. Switch back to the **SQLQuery_...** pane containing the **CREATE TABLE** statement, and replace it with the following **INSERT** statement to insert a new row into the **SalesLT.CallLog** table.
+6. Switch back to the **Create and fill table** worksheet containing the **CREATE TABLE** statement, and replace it with the following **INSERT** statement to insert a new row into the **SalesLT.CallLog** table.
 
     ```
     INSERT INTO SalesLT.CallLog
     VALUES
-    ('2015-01-01T12:30:00', 'adventure-works\pamela0', 1, '245-555-0173', 'Returning call re: enquiry about delivery');
+    (DEFAULT, '2015-01-01T12:30:00', 'adventure-works\pamela0', 1, '245-555-0173', 'Returning call re: enquiry about delivery');
     ```
 
 7. Run the query and review the message, which should indicate that 1 row was affected.
-8. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that the results contain the row you inserted. The **CallID** column is an *identity* column that is automatically incremented (so the first row has the value **1**), and the remaining columns contain the values you specified in the **INSERT** statement
-9. Switch back to the **SQLQuery_...** pane containing the **INSERT** statement, and replace it  with the following code to insert another row. This time, the **INSERT** statement takes advantage of the fact that the table has a default value defined for the **CallTime** field, and allows *NULL* values in the **Notes** field.
+8. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that the results contain the row you inserted. The **CallID** column is an *identity* column that is automatically incremented (so the first row has the value **1**), and the remaining columns contain the values you specified in the **INSERT** statement
+9. Switch back to the **Create and fill table** worksheet containing the **INSERT** statement, and replace it  with the following code to insert another row. This time, the **INSERT** statement takes advantage of the fact that the table has a default value defined for the **CallTime** field, and allows *NULL* values in the **Notes** field.
 
     ```
     INSERT INTO SalesLT.CallLog
     VALUES
-    (DEFAULT, 'adventure-works\david8', 2, '170-555-0127', NULL);
+    (DEFAULT, DEFAULT, 'adventure-works\david8', 2, '170-555-0127', NULL);
     ```
 
 10. Run the query and review the message, which should indicate that 1 row was affected.
-11. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that the second row has been inserted, with the default value for the **CallTime** field (the current time when the row was inserted) and *NULL* for the **Notes** field.
-12. Switch back to the **SQLQuery_...** pane containing the **INSERT** statement, and replace it  with the following code to insert another row. This time, the **INSERT** statement explicitly lists the columns into which the new values will be inserted. The columns not specified in the statement support either default or *NULL* values, so they can be omitted.
+11. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that the second row has been inserted, with the default value for the **CallTime** field (the current time when the row was inserted) and *NULL* for the **Notes** field.
+12. Switch back to the **Create and fill table** worksheet containing the **INSERT** statement, and replace it  with the following code to insert another row. This time, the **INSERT** statement explicitly lists the columns into which the new values will be inserted. The columns not specified in the statement support either default or *NULL* values, so they can be omitted.
 
     ```
     INSERT INTO SalesLT.CallLog (SalesPerson, CustomerID, PhoneNumber)
@@ -68,19 +68,19 @@ You use the **INSERT** statement to insert data into a table.
     ```
 
 13. Run the query and review the message, which should indicate that 1 row was affected.
-14. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that the third row has been inserted, once again using the default value for the **CallTime** field and *NULL* for the **Notes** field.
-15. Switch back to the **SQLQuery_...** pane containing the **INSERT** statement, and replace it  with the following code, which inserts two rows of data into the **SalesLT.CallLog** table.
+14. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that the third row has been inserted, once again using the default value for the **CallID** and **CallTime** field and *NULL* for the **Notes** field.
+15. Switch back to the **Create and fill table** worksheet containing the **INSERT** statement, and replace it  with the following code, which inserts two rows of data into the **SalesLT.CallLog** table.
 
     ```
     INSERT INTO SalesLT.CallLog
     VALUES
-    (DATEADD(mi,-2, GETDATE()), 'adventure-works\jillian0', 4, '710-555-0173', NULL),
-    (DEFAULT, 'adventure-works\shu0', 5, '828-555-0186', 'Called to arrange deliver of order 10987');
+    (DEFAULT, DATEADD(mi,-2, GETDATE()), 'adventure-works\jillian0', 4, '710-555-0173', NULL),
+    (DEFAULT, DEFAULT, 'adventure-works\shu0', 5, '828-555-0186', 'Called to arrange deliver of order 10987');
     ```
 
 16. Run the query and review the message, which should indicate that 2 rows were affected.
-17. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that two new rows have been added to the table.
-18. Switch back to the **SQLQuery_...** pane containing the **INSERT** statement, and replace it  with the following code, which inserts the results of a **SELECT** query into the **SalesLT.CallLog** table.
+17. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that two new rows have been added to the table.
+18. Switch back to the **Create and fill table** worksheet containing the **INSERT** statement, and replace it  with the following code, which inserts the results of a **SELECT** query into the **SalesLT.CallLog** table.
 
     ```
     INSERT INTO SalesLT.CallLog (SalesPerson, CustomerID, PhoneNumber, Notes)
@@ -90,40 +90,27 @@ You use the **INSERT** statement to insert data into a table.
     ```
 
 19. Run the query and review the message, which should indicate that 2 rows were affected.
-20. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that two new rows have been added to the table. These are the rows that were retrieved by the **SELECT** query.
-21. Switch back to the **SQLQuery_...** pane containing the **INSERT** statement, and replace it  with the following code, which inserts a row and then uses the **SCOPE_IDENTITY** function to retrieve the most recent *identity* value that has been assigned in the database (to any table), and also the **IDENT_CURRENT** function, which retrieves the latest *identity* value in the specified table.
+20. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that two new rows have been added to the table. These are the rows that were retrieved by the **SELECT** query.
+21. Switch back to the **Create and fill table** worksheet containing the **INSERT** statement, and replace it  with the following code, which inserts a row and then uses the **SCOPE_IDENTITY** function to retrieve the most recent *identity* value that has been assigned in the database (to any table), and also the **IDENT_CURRENT** function, which retrieves the latest *identity* value in the specified table.
 
     ```
     INSERT INTO SalesLT.CallLog (SalesPerson, CustomerID, PhoneNumber)
     VALUES
-    ('adventure-works\josé1', 10, '150-555-0127');
+    ('adventure-works\josé1', 10, '150-555-0127'),
+    ('adventure-works\josé1', 11, '926-555-0159');
 
-    SELECT SCOPE_IDENTITY() AS LatestIdentityInDB,
-           IDENT_CURRENT('SalesLT.CallLog') AS LatestCallID;
+    SELECT MAX(CallID) AS LatestCallID
+    FROM SalesLT.CallLog;
     ```
 
-22. Run the code and review the results, which should be two numeric values, both the same.
-23. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it to validate that the new row that has been inserted has a **CallID** value that matches the *identity* value returned when you inserted it.
-24. Switch back to the **SQLQuery_...** pane containing the **INSERT** statement, and replace it  with the following code, which enables explicit insertion of *identity* values and inserts a new row with a specified **CallID** value, before disabling explicit *identity* insertion again.
-
-    ```
-    SET IDENTITY_INSERT SalesLT.CallLog ON;
-
-    INSERT INTO SalesLT.CallLog (CallID, SalesPerson, CustomerID, PhoneNumber)
-    VALUES
-    (20, 'adventure-works\josé1', 11, '926-555-0159');
-
-    SET IDENTITY_INSERT SalesLT.CallLog OFF;
-    ```
-
-25. Run the code and review the results, which should affect 1 row.
-26. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it to validate that a new row has been inserted with the especific **CallID** value you specified in the **INSERT** statement (9).
+22. Run the code and review the results, which should be a numeric value.
+23. Switch to the **Select from table** worksheet containing the **SELECT** query and run it to validate that the new row that has been inserted has a **CallID** value that matches the *identity* value returned when you inserted it.
 
 ## Update data
 
 To modify existing rows in a table, use the **UPDATE** statement.
 
-1. On the **SQLQuery_...** pane containing the **INSERT** statement, replace the existing code with the following code.
+1. On the **Create and fill table** worksheet containing the **INSERT** statement, replace the existing code with the following code.
 
     ```
     UPDATE SalesLT.CallLog
@@ -132,8 +119,8 @@ To modify existing rows in a table, use the **UPDATE** statement.
     ```
 
 2. Run the **UPDATE** statement and review the message, which should indicate the number of rows affected.
-3. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that the rows that previously had *NULL* values for the **Notes** field now contain the text *No notes*.
-4. Switch back to the **SQLQuery_...** pane containing the **UPDATE** statement, and replace it with the following code, which updates multiple columns.
+3. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that the rows that previously had *NULL* values for the **Notes** field now contain the text *No notes*.
+4. Switch back to the **Create and fill table** worksheet containing the **UPDATE** statement, and replace it with the following code, which updates multiple columns.
 
     ```
     UPDATE SalesLT.CallLog
@@ -141,8 +128,8 @@ To modify existing rows in a table, use the **UPDATE** statement.
     ```
 
 5. Run the **UPDATE** statement and note the number of rows affected.
-6. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that *all* rows have been updated to remove the **SalesPerson** and **PhoneNumber** fields - this emphasizes the danger of accidentally omitting a **WHERE** clause in an **UPDATE** statement.
-7. Switch back to the **SQLQuery_...** pane containing the **UPDATE** statement, and replace it with the following code, which updates the **SalesLT.CallLog** table based on the results of a **SELECT** query.
+6. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that *all* rows have been updated to remove the **SalesPerson** and **PhoneNumber** fields - this emphasizes the danger of accidentally omitting a **WHERE** clause in an **UPDATE** statement.
+7. Switch back to the **Create and fill table** worksheet containing the **UPDATE** statement, and replace it with the following code, which updates the **SalesLT.CallLog** table based on the results of a **SELECT** query.
 
     ```
     UPDATE SalesLT.CallLog
@@ -152,13 +139,13 @@ To modify existing rows in a table, use the **UPDATE** statement.
     ```
 
 8. Run the **UPDATE** statement and note the number of rows affected.
-9. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that the table has been updated using the values returned by the **SELECT** statement.
+9. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that the table has been updated using the values returned by the **SELECT** statement.
 
 ## Delete data
 
 To delete rows in the table, you generally use the **DELETE** statement; though you can also remove all rows from a table by using the **TRUNCATE TABLE** statement.
 
-1. On the **SQLQuery_...** pane containing the **UPDATE** statement, replace the existing code with the following code.
+1. On the **Create and fill table** worksheet containing the **UPDATE** statement, replace the existing code with the following code.
 
     ```
     DELETE FROM SalesLT.CallLog
@@ -166,15 +153,15 @@ To delete rows in the table, you generally use the **DELETE** statement; though 
     ```
 
 2. Run the **DELETE** statement and review the message, which should indicate the number of rows affected.
-3. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that rows with a **CallDate** older than 7 days have been deleted.
-4. Switch back to the **SQLQuery_...** pane containing the **DELETE** statement, and replace it with the following code, which uses the **TRUNCATE TABLE** statement to remove all rows in the table.
+3. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that rows with a **CallDate** older than 7 days have been deleted.
+4. Switch back to the **Create and fill table** worksheet containing the **DELETE** statement, and replace it with the following code, which uses the **TRUNCATE TABLE** statement to remove all rows in the table.
 
     ```
     TRUNCATE TABLE SalesLT.CallLog;
     ```
 
 5. Run the **TRUNCATE TABLE** statement and note the number of rows affected.
-6. Switch to the **SQLQuery_...** pane containing the **SELECT** query and run it. Note that *all* rows have been deleted from the table.
+6. Switch to the **Select from table** worksheet containing the **SELECT** query and run it. Note that *all* rows have been deleted from the table.
 
 ## Challenges
 
@@ -217,7 +204,7 @@ Each Adventure Works product is stored in the **SalesLT.Product** table, and eac
 
 ### Challenge 2: Update products
 
-You have inserted data for a product, but the pricing details are not correct. You must now update the records you have previously inserted to reflect the correct pricing. Tip: Review the documentation for UPDATE in the Transact-SQL Language Reference.
+You have inserted data for a product, but the pricing details are not correct. You must now update the records you have previously inserted to reflect the correct pricing. Tip: Review the documentation for UPDATE in the Snowflake SQL Command Reference.
 
 1. Update product prices
     - The sales manager at Adventure Works has mandated a 10% price increase for all products in the *Bells and Horns* category. Update the rows in the **SalesLT.Product** table for these products to increase their price by 10%.
@@ -245,10 +232,14 @@ This section contains suggested solutions for the challenge queries.
     VALUES
     ('LED Lights', 'LT-L123', 2.56, 12.99, 37, GETDATE());
 
-    SELECT SCOPE_IDENTITY();
+    SELECT MAX(ProductID) 
+    FROM SalesLT.Product;
 
     SELECT * FROM SalesLT.Product
-    WHERE ProductID = SCOPE_IDENTITY();
+    WHERE ProductID = (
+        SELECT MAX(ProductID) 
+        FROM SalesLT.Product
+        );
     ```
 
 2. Insert a new category with two products:
@@ -260,14 +251,17 @@ This section contains suggested solutions for the challenge queries.
 
     INSERT INTO SalesLT.Product (Name, ProductNumber, StandardCost, ListPrice, ProductCategoryID, SellStartDate)
     VALUES
-    ('Bicycle Bell', 'BB-RING', 2.47, 4.99, IDENT_CURRENT('SalesLT.ProductCategory'), GETDATE()),
-    ('Bicycle Horn', 'BH-PARP', 1.29, 3.75, IDENT_CURRENT('SalesLT.ProductCategory'), GETDATE());
+    ('Bicycle Bell', 'BB-RING', 2.47, 4.99, (SELECT MAX(ProductCategoryID) FROM SalesLT.ProductCategory), GETDATE()),
+    ('Bicycle Horn', 'BH-PARP', 1.29, 3.75, (SELECT MAX(ProductCategoryID) FROM SalesLT.ProductCategory), GETDATE());
 
     SELECT c.Name As Category, p.Name AS Product
     FROM SalesLT.Product AS p
     JOIN SalesLT.ProductCategory as c
         ON p.ProductCategoryID = c.ProductCategoryID
-    WHERE p.ProductCategoryID = IDENT_CURRENT('SalesLT.ProductCategory');
+    WHERE p.ProductCategoryID = (
+        SELECT MAX(ProductCategoryID)
+        FROM SalesLT.ProductCategory
+        );
     ```
 
 ### Challenge 2
