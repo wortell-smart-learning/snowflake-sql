@@ -63,7 +63,7 @@ Sometimes you might end up having to rely on complex queries. You can use derive
 
     ```
     SELECT ProductID, Name, ListPrice,
-           CASE WHEN ListPrice > 1000 THEN N'High' ELSE N'Normal' END AS PriceType
+           CASE WHEN ListPrice > 1000 THEN 'High' ELSE 'Normal' END AS PriceType
     FROM SalesLT.Product;
     ```
 
@@ -77,10 +77,10 @@ Sometimes you might end up having to rely on complex queries. You can use derive
         (
             SELECT
             ProductID, Name, ListPrice,
-            CASE WHEN ListPrice > 1000 THEN N'High' ELSE N'Normal' END AS PriceType
+            CASE WHEN ListPrice > 1000 THEN 'High' ELSE 'Normal' END AS PriceType
             FROM SalesLT.Product
         ) AS DerivedTable
-    WHERE DerivedTable.PriceType = N'High';
+    WHERE DerivedTable.PriceType = 'High';
     ```
 
 1. Select **&#x23f5;Run**.
@@ -99,7 +99,7 @@ Adventure Works is forming a new sales team located in Canada. The team wants to
 
 To carry out the task do the following:
 
-1. Write a Transact-SQL query to create a view for customer addresses in Canada.
+1. Write a SQL query to create a view for customer addresses in Canada.
    - Create a view based on the following columns in the **SalesLT.Address** table:
       - **AddressLine1**
       - **City**
@@ -150,7 +150,7 @@ This section contains suggested solutions for the challenge queries.
 
     ```
     SELECT ProductID, Name, Weight, ListPrice,
-           CASE WHEN Weight > 1000 THEN N'Heavy' ELSE N'Normal' END AS WeightType
+           CASE WHEN Weight > 1000 THEN 'Heavy' ELSE 'Normal' END AS WeightType
     FROM SalesLT.Product;
     ```
 
@@ -161,8 +161,8 @@ This section contains suggested solutions for the challenge queries.
     FROM
         (
             SELECT ProductID, Name, Weight, ListPrice,
-                   CASE WHEN Weight > 1000. THEN N'Heavy' ELSE N'Normal' END AS WeightType
+                   CASE WHEN Weight > 1000. THEN 'Heavy' ELSE 'Normal' END AS WeightType
             FROM SalesLT.Product
         ) AS DerivedTable
-    WHERE DerivedTable.WeightType = N'Heavy' AND DerivedTable.ListPrice > 2000;
+    WHERE DerivedTable.WeightType = 'Heavy' AND DerivedTable.ListPrice > 2000;
     ```
