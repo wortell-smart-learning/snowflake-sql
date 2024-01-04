@@ -12,257 +12,181 @@ In this lab, you'll use Snowflake SQL statements to test various error handling 
 
 > **Note**: If you're familiar with the standard **AdventureWorks** sample database, you may notice that in this lab we are using a simplified version that makes it easier to focus on learning Snowflake SQL syntax.
 
-## Write a basic TRY/CATCH construct
+## Use TRY_<conversion function> to prevent a conversion error
 
-1. Start Azure Data Studio
-2. From the Servers pane, double-click the **AdventureWorks connection**. A green dot will appear when the connection is successful.
-3. Right click the AdventureWorks connection and select **New Query**. A new query window is displayed with a connection to the AdventureWorks database.
-4. The previous step will open a query screen that is connected to the TSQL database.
-5. In the query pane, type the following T-SQL code:
+1. Create a new worksheet and connect to the database and warehouse.
+1. In the worksheet, type the following SQL code:
 
-```
-SELECT CAST(N'Some text' AS int);
-```
+    ```
+    SELECT CAST('Some text' AS int);
+    ```
 
-6. Select **&#x23f5;Run** to run the code.
-7. Notice the conversion error:
+1. Select **&#x23f5;Run** to run the code.
+1. Notice the conversion error:
 
-   | Result|
-   |-------|
-   | Conversion failed when converting the nvarchar value 'Some text' to data type int. |
+    | Result|
+    |-------|
+    | Numeric value 'Some text' is not recognized |
 
-8. Write a TRY/CATCH construct. Your T-SQL code should look like this:
+1. Add **TRY_** to the **CAST** function. Your SQL code should look like this:
 
-```
-BEGIN TRY
-    SELECT CAST(N'Some text' AS int);
-END TRY
-BEGIN CATCH
-    PRINT 'Error';
-END CATCH;
-```
+    ```
+    SELECT TRY_CAST('Some text' AS int);
+    ```
 
-9. Run the modified code, and review the response. The results should include no rows, and the **Messages** tab should include the text **Error**.
+1. Run the modified code, and review the response. The result should include a row with a **null** value, indicating the casting was unsuccessful.
 
-## Display an error number and an error message
+## Declare and raise your own exception
 
-1. Right click the AdventureWorks connection and select New Query
-2. Enter the following T-SQL code:
+1. Replace the code in your worksheet with the following SQL code:
 
-```
-DECLARE @num varchar(20) = '0';
-
-BEGIN TRY
-    PRINT 5. / CAST(@num AS numeric(10,4));
-END TRY
-BEGIN CATCH
-
-END CATCH;
-```
-
-3. Select **&#x23f5;Run**. Notice that you didn't get an error because you used the TRY/CATCH construct.
-4. Modify the T-SQL code by adding two PRINT statements. The T-SQL code should look like this:
-
-```
-DECLARE @num varchar(20) = '0';
-
-BEGIN TRY
-    PRINT 5. / CAST(@num AS numeric(10,4));
-END TRY
-BEGIN CATCH
-    PRINT 'Error Number: ' + CAST(ERROR_NUMBER() AS varchar(10));
-    PRINT 'Error Message: ' + ERROR_MESSAGE();
-END CATCH;
-```
-
-5. Run the modified code, and notice that an error is produced, but it's one that you defined.
-
-   | Started executing query at line 1 |
-   | ------ |
-   | Error Number: 8134 |
-   | Error Message: Divide by zero error encountered. |
-
-6. Now change the value of the @num variable to look like this:
-
-```
-DECLARE @num varchar(20) = 'A';
-```
-
-7. Run the modified code. Notice that you get a different error number and message.
-
-   | Started executing query at line 1 |
-   | ------ |
-   | Error Message: Error converting data type varchar to numeric.|
-   | Error Number: 8114 |
-
-8. Change the value of the @num variable to look like this:
-
-```
-DECLARE @num varchar(20) = ' 1000000000';
-```
-
-9. Run the modified code. Notice that you get a different error number and message.
-
-   | Started executing query at line 1 |
-   | ------ |
-   | Error Number: 8115 |
-   | Error Message: Arithmetic overflow error converting varchar to data type numeric. |
-
-## Add conditional logic to a CATCH block
-
-1. Modify the T-SQL code you used previously so it looks like this:
-
-```
-DECLARE @num varchar(20) = 'A';
-
-BEGIN TRY
-    PRINT 5. / CAST(@num AS numeric(10,4));
-END TRY
-BEGIN CATCH
-    IF ERROR_NUMBER() IN (245, 8114)
+    ```
+    EXECUTE IMMEDIATE 
+    $$
+    DECLARE
+      my_exception EXCEPTION (-20002, 'Raised MY_EXCEPTION.');
+      integer_variable INT;
     BEGIN
-        PRINT 'Handling conversion error...'
-    END
-    ELSE
-    BEGIN 
-        PRINT 'Handling non-conversion error...';
+      SELECT TRY_TO_NUMBER('Some text') INTO :integer_variable;
+      IF (integer_variable IS NULL) THEN
+        RAISE my_exception;
+      END IF;
+      RETURN integer_variable;
     END;
+    $$
+    ;
+    ```
 
-    PRINT 'Error Number: ' + CAST(ERROR_NUMBER() AS varchar(10));
-    PRINT 'Error Message: ' + ERROR_MESSAGE();
-END CATCH;
-```
+1. Select **&#x23f5;Run**. Notice that you get an error message containing your own error code and message.
 
-2. Run the modified code.  You'll see that message returned now contains more information:
+## Construct your own error message object
 
-   | Started executing query at line 1 |
-   | ------ |
-   | Handling conversion error...|
-   | Error Number: 8114 |
-   | Error Message: Error converting data type varchar to numeric.|
+1. Extend the SQL code you used previously so it looks like this:
 
-3. Change the value of the @num variable to look like this:
+    ```
+    EXECUTE IMMEDIATE 
+    $$
+    DECLARE
+      my_exception EXCEPTION (-20002, 'Raised MY_EXCEPTION.');
+      integer_variable INT;
+    BEGIN
+      SELECT TRY_TO_NUMBER('Some text') INTO :integer_variable;
+      IF (integer_variable IS NULL) THEN
+        RAISE my_exception;
+      END IF;
+      RETURN integer_variable;
+    EXCEPTION
+      WHEN my_exception THEN
+        RETURN OBJECT_CONSTRUCT('Error type', 'MY_EXCEPTION',
+                                'SQLCODE', sqlcode,
+                                'SQLERRM', sqlerrm,
+                                'SQLSTATE', sqlstate);
+    END;
+    $$
+    ;
+    ```
 
-```
-DECLARE @num varchar(20) = '0';
-```
+1. Run the modified code.  You'll see that message returned now contains more information:
 
-4. Run the modified code. This produces a different type of error message:
-
-   | Started executing query at line 1 |
-   | ------ |
-   | Handling non-conversion error...|
-   | Error Number: 8134 |
-   | Error Message: Divide by zero error encountered. |
+    | anonymous block|
+    | ------ |
+    | {   "Error type": "MY_EXCEPTION",   "SQLCODE": -20002,   "SQLERRM": "Raised MY_EXCEPTION.",   "SQLSTATE": "P0001" } |
 
 ## Create a stored procedure to display an error message
 
-1. Right click the AdventureWorks connection and select New Query
-2. Enter the following T-SQL code:
+1. Enter the following SQL code:
 
-```
-CREATE PROCEDURE dbo.GetErrorInfo AS
-PRINT 'Error Number: ' + CAST(ERROR_NUMBER() AS varchar(10));
-PRINT 'Error Message: ' + ERROR_MESSAGE();
-PRINT 'Error Severity: ' + CAST(ERROR_SEVERITY() AS varchar(10));
-PRINT 'Error State: ' + CAST(ERROR_STATE() AS varchar(10));
-PRINT 'Error Line: ' + CAST(ERROR_LINE() AS varchar(10));
-PRINT 'Error Proc: ' + COALESCE(ERROR_PROCEDURE(), 'Not within procedure');
-```
+    ```
+    CREATE OR REPLACE PROCEDURE dbo.GetErrorInfo (code int, message NVARCHAR(200), state NVARCHAR(5))
+    RETURNS OBJECT
+    LANGUAGE SQL
+    AS
+    $$
+    BEGIN
+        RETURN OBJECT_CONSTRUCT('Error type', 'EXCEPTION',
+                            'SQLCODE', code,
+                            'SQLERRM', message,
+                            'SQLSTATE', state);
+    END;
+    $$
+    ```
 
-3. Select **&#x23f5;Run**. to run the code, which creates a stored procedure named **dbo.GetErrorInfo**.
-4. Return to the query that previously resulted in a "Divide by zero" error, and modify it as follows:
+1. Select **&#x23f5;Run**. to run the code, which creates a stored procedure named **dbo.GetErrorInfo**.
+1. Return to the query that previously resulted in a your custom error, and modify it as follows:
 
-```
-DECLARE @num varchar(20) = '0';
+    ```
+EXECUTE IMMEDIATE 
+$$
+DECLARE
+  my_exception EXCEPTION (-20002, 'Raised MY_EXCEPTION.');
+  integer_variable INT;
+BEGIN
+  SELECT TRY_TO_NUMBER('Some text') INTO :integer_variable;
+  IF (integer_variable IS NULL) THEN
+    RAISE my_exception;
+  END IF;
+  RETURN integer_variable;
+EXCEPTION
+  WHEN my_exception THEN
+    BEGIN
+        LET rs RESULTSET;
+        LET statement VARCHAR := 'CALL dbo.GetErrorInfo(' || sqlcode || ',\'' || sqlerrm  || '\',\'' || sqlstate || '\')'; 
+        rs := (EXECUTE IMMEDIATE :statement);
+        RETURN table(rs);
+    END;
+END;
+$$
+;
+    ```
 
-BEGIN TRY
-    PRINT 5. / CAST(@num AS numeric(10,4));
-END TRY
-BEGIN CATCH
-    EXECUTE dbo.GetErrorInfo;
-END CATCH;
-```
+1. Run the code.  This will trigger the stored procedure and display:
 
-5. Run the code.  This will trigger the stored procedure and display:
-
-   | Started executing query at line 1 |
-   | ------ |
-   | Error Number: 8134|
-   | Error Message: Divide by zero error encountered.|
-   | Error Severity: 16|
-   | Error State: 1|
-   | Error Line: 4|
-   | Error Proc: Not within procedure|
-
-## Rethrow the Existing Error Back to a Client
-
-1. Modify the CATCH block of your code to include a THROW command, so that your code looks like this:
-
-```
-DECLARE @num varchar(20) = '0';
-
-BEGIN TRY
-    PRINT 5. / CAST(@num AS numeric(10,4));
-END TRY
-BEGIN CATCH
-    EXECUTE dbo.GetErrorInfo; 
-    THROW;
-END CATCH;
-```
-
-2. Run the modified code.  Here you'll see that it executes the stored procedure, and then throws the error message again (so a client application can catch and process it).
-
-   | Started executing query at line 1 |
-   | ------ |
-   | Error Number: 8134|
-   | Error Message: Divide by zero error encountered.|
-   | Error Severity: 16|
-   | Error State: 1|
-   | Error Line: 4|
-   | Error Proc: Not within procedure|
-   | Msg 8134, Level 16, State 1, Line 4|
-   | Divide by zero error encountered.|
+    | GetErrorInfo |
+    | ------ |
+    | {   "Error type": "EXCEPTION",   "SQLCODE": -20002,   "SQLERRM": "Raised MY_EXCEPTION.",   "SQLSTATE": "P0001" }|
 
 ## Add an Error Handling Routine
 
 1. Modify your code to look like this:
 
-```
-DECLARE @num varchar(20) = 'A';
-
-BEGIN TRY
-    PRINT 5. / CAST(@num AS numeric(10,4));
-END TRY
-BEGIN CATCH
-    EXECUTE dbo.GetErrorInfo;
-    
-    IF ERROR_NUMBER() = 8134
+    ```
+    EXECUTE IMMEDIATE 
+    $$
+    DECLARE
+      my_exception EXCEPTION (-20002, 'Raised MY_EXCEPTION.');
+      integer_variable INT;
     BEGIN
-        PRINT 'Handling devision by zero...';
-    END
-    ELSE 
-    BEGIN
-        PRINT 'Throwing original error';
-        THROW;
+      SELECT TRY_TO_NUMBER('1') INTO :integer_variable;
+      IF (integer_variable IS NULL) THEN
+        RAISE my_exception;
+      END IF;
+      LET other_error := 1/0;
+      RETURN integer_variable;
+    EXCEPTION
+      WHEN my_exception THEN
+        BEGIN
+            LET rs RESULTSET;
+            LET statement VARCHAR := 'CALL dbo.GetErrorInfo(' || sqlcode || ',\'' || sqlerrm  || '\',\'' || sqlstate || '\')'; 
+            rs := (EXECUTE IMMEDIATE :statement);
+            RETURN table(rs);
+        END;
+      WHEN OTHER THEN
+        BEGIN
+            LET rs RESULTSET;
+            LET statement VARCHAR := 'CALL dbo.GetErrorInfo(' || sqlcode || ',\'' || sqlerrm  || '\',\'' || sqlstate || '\')'; 
+            rs := (EXECUTE IMMEDIATE :statement);
+            RETURN table(rs);
+        END;
     END;
-    
-END CATCH;
-```
+    $$
+    ;
+    ```
 
-2. Run the modified code  As you'll see, it executes the stored procedure to display the error, identifies that it isn't error number 8134, and throws the error again.
+1. Run the modified code. The text fed to the TRY_TO_NUMBER function is valid now, so your custom exception is not raised. Another error is added though, and handled in the OTHER exception block. It executes the stored procedure to display the error.
 
-   | Started executing query at line 1 |
-   | ------ |
-   | Error Number: 8114|
-   | Error Message: Error converting data type varchar to numeric.|
-   | Error Severity: 16|
-   | Error State: 5|
-   | Error Line: 5|
-   | Error Proc: Not within procedure|
-   | Throwing original error|
-   | Msg 8114, Level 16, State 5, Line 5|
-   | Error converting data type varchar to numeric.|
+    |  GetErrorInfo |
+    | ------ |
+    | {   "Error type": "EXCEPTION",   "SQLCODE": 100051,   "SQLERRM": "Division by zero",   "SQLSTATE": "22012" }|
 
 ## Challenges
 
