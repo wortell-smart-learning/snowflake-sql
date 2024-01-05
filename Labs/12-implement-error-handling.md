@@ -194,34 +194,7 @@ Now it's time to try using what you've learned.
 
 > **Tip**: Try to determine the appropriate solutions for yourself. If you get stuck, suggested answers are provided at the end of this lab.
 
-### Challenge 1: Catch errors and display only valid records
-
-The marketing manager is using the following SQL query, but they are getting unexpected results. They have asked you to make the code more resilient, to stop it crashing and to not display duplicates when there is no data.
-
-```
-DECLARE @customerID AS INT = 30110;
-DECLARE @fname AS NVARCHAR(20);
-DECLARE @lname AS NVARCHAR(30);
-DECLARE @maxReturns AS INT = 1; 
-
-WHILE @maxReturns <= 10
-BEGIN
-    SELECT @fname = FirstName, @lname = LastName FROM SalesLT.Customer
-        WHERE CustomerID = @CustomerID;
-    PRINT @fname + N' ' + @lname;
-    SET @maxReturns += 1;
-    SET @CustomerID += 1;
-END;
-```
-
-1. Catch the error
-    - Add a TRY .. CATCH block around the SELECT query.
-2. Warn the user that an error has occurred
-    - Extend your SQL code to display a warning to the user that their is an error.
-3. Only display valid customer records
-    - Extend the SQL using the @@ROWCOUNT > 0 check to only display a result if the customer ID exists.
-
-### Challenge 2: Create a simple error display procedure
+### Challenge 1: Create a simple error display procedure
 
 Error messages and error handling are essential for good code. Your manager has asked you to develop a common error display procedure.  Use this sample code as your base.
 
