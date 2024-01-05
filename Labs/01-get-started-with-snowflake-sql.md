@@ -12,12 +12,13 @@ In this lab, you will use some basic SELECT queries to retrieve data from the **
 
 We'll use the **AdventureWorks** database in this lab, so let's start by exploring it in Snowflake's UI: Snowsight.
 
-1. Open a browser, go to *https://sigma_data_consulting.eu-central-1.snowflakecomputing.com/* and authenticate with the provided credentials.
-2. Click on the left hand in the navigation pane on **Data** to see the database. Expand the database and schema **SalesLT** to see the tables that are defined in the database.
-3. Click on the **SalesLT.Product** table to see its definition. Each column has a name, a data type, an indication of whether it can contain *null* values, and in some cases an indication that a columns is used as a primary key (PK) or foreign key (FK).
-4. Click on the Data preview tab, select a warehouse and click on **Preview** to retrieve the first 100 rows from the table.
-5. Review the query results, which consist of 100 rows - each row representing a product that is sold by the fictitious *Adventure Works Cycles* company.
-6. Explore the other tables in the database, which contain information about product details, customers, and sales orders. The tables are related through primary and foreign keys, as shown here (you may need to resize the pane to see them clearly):
+1. Open a browser, go to your snowflake URL and authenticate with your credentials.
+2. Click on the left hand in the navigation pane on **Data** to see the databases for which your have permissions. A script to create and fill the AdventureWorksLT database can be found [here](../Scripts/create_database.sql). Copy the script to a worksheet and run it.
+3. Expand the database and schema **SalesLT** to see the tables that are defined in the database.
+4. Click on the **SalesLT.Product** table to see its definition. Each column has a name, a data type, an indication of whether it can contain *null* values, and in some cases an indication that a columns is used as a primary key (PK) or foreign key (FK).
+5. Click on the Data preview tab, select a warehouse and click on **Preview** to retrieve the first 100 rows from the table.
+6. Review the query results, which consist of 100 rows - each row representing a product that is sold by the fictitious *Adventure Works Cycles* company.
+7. Explore the other tables in the database, which contain information about product details, customers, and sales orders. The tables are related through primary and foreign keys, as shown here (you may need to resize the pane to see them clearly):
 
     ![An entity relationship diagram of the AdventureWorks database](./Images/adventureworks-erd.png)
 
