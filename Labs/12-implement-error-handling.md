@@ -196,7 +196,7 @@ Now it's time to try using what you've learned.
 
 ### Challenge 1: Catch errors and display only valid records
 
-The marketing manager is using the following T-SQL query, but they are getting unexpected results. They have asked you to make the code more resilient, to stop it crashing and to not display duplicates when there is no data.
+The marketing manager is using the following SQL query, but they are getting unexpected results. They have asked you to make the code more resilient, to stop it crashing and to not display duplicates when there is no data.
 
 ```
 DECLARE @customerID AS INT = 30110;
@@ -217,24 +217,30 @@ END;
 1. Catch the error
     - Add a TRY .. CATCH block around the SELECT query.
 2. Warn the user that an error has occurred
-    - Extend your TSQL code to display a warning to the user that their is an error.
+    - Extend your SQL code to display a warning to the user that their is an error.
 3. Only display valid customer records
-    - Extend the T-SQL using the @@ROWCOUNT > 0 check to only display a result if the customer ID exists.
+    - Extend the SQL using the @@ROWCOUNT > 0 check to only display a result if the customer ID exists.
 
 ### Challenge 2: Create a simple error display procedure
 
 Error messages and error handling are essential for good code. Your manager has asked you to develop a common error display procedure.  Use this sample code as your base.
 
 ```
-DECLARE @num varchar(20) = 'Challenge 2';
-
-PRINT 'Casting: ' + CAST(@num AS numeric(10,4));
+EXECUTE IMMEDIATE 
+$$
+BEGIN
+    LET num := 'Challenge 2';
+    LET result_string := 'Casting: ' || num::DECIMAL(10,4);
+    RETURN result_string;
+END;
+$$
+;
 ```
 
 1. Catch the error
-   - Add a TRY...CATCH around the PRINT statement.
+   - Declare and raise an exception.
 2. Create a stored procedure
-   - Create a stored procedure called dbo.DisplayErrorDetails.  It should display a title and the value for **ERROR_NUMBER**, **ERROR_MESSAGE** and **ERROR_SEVERITY**.
+   - Create a stored procedure called dbo.DisplayErrorDetails.  It should display a title and the value for **sqlcode**, **sqlerrm** and **sqlstate**.
 3. Display the error information
    - Use the stored procedure to display the error information when an error occurs.
 
@@ -327,35 +333,63 @@ END;
 1. Catch the error
 
 ```
-DECLARE @num varchar(20) = 'Challenge 2';
-
-BEGIN TRY
-    PRINT 'Casting: ' + CAST(@num AS numeric(10,4));
-END TRY
-BEGIN CATCH
-
-END CATCH;
+EXECUTE IMMEDIATE 
+$$
+DECLARE
+    my_exception EXCEPTION (-20002, 'Raised MY_EXCEPTION');
+    decimal_variable DECIMAL(10,4);
+BEGIN
+    decimal_variable := (SELECT TRY_TO_DECIMAL('Challenge 2', 10,4));
+    IF (decimal_variable IS NULL) THEN
+        RAISE my_exception;
+    END IF;
+    LET result_string := 'Casting: ' || decimal_variable;
+    RETURN result_string;
+END;
+$$
+;
 ```
 
 2. Create a stored procedure
 
 ```
-CREATE PROCEDURE dbo.DisplayErrorDetails AS
-PRINT 'ERROR INFORMATION';
-PRINT 'Error Number: ' + CAST(ERROR_NUMBER() AS varchar(10));
-PRINT 'Error Message: ' + ERROR_MESSAGE();
-PRINT 'Error Severity: ' + CAST(ERROR_SEVERITY() AS varchar(10));
+CREATE OR REPLACE PROCEDURE dbo.DisplayErrorDetails (code int, message NVARCHAR(200), state NVARCHAR(5))
+RETURNS OBJECT
+LANGUAGE SQL
+AS
+$$
+BEGIN
+    RETURN OBJECT_CONSTRUCT('SQLCODE', code,
+                        'SQLERRM', message,
+                        'SQLSTATE', state);
+END;
+$$
 ```
 
 3. Display the error information
 
 ```
-DECLARE @num varchar(20) = 'Challenge 2';
-
-BEGIN TRY
-    PRINT 'Casting: ' + CAST(@num AS numeric(10,4));
-END TRY
-BEGIN CATCH
-    EXECUTE dbo.DisplayErrorDetails;
-END CATCH;
+EXECUTE IMMEDIATE 
+$$
+DECLARE
+    my_exception EXCEPTION (-20002, 'Raised MY_EXCEPTION');
+    decimal_variable DECIMAL(10,4);
+BEGIN
+    decimal_variable := (SELECT TRY_TO_DECIMAL('Challenge 2', 10,4));
+    IF (decimal_variable IS NULL) THEN
+        RAISE my_exception;
+    END IF;
+    LET result_string := 'Casting: ' || decimal_variable;
+    RETURN result_string;
+EXCEPTION
+    WHEN my_exception THEN
+    BEGIN
+        LET rs RESULTSET;
+        LET statement VARCHAR := 'CALL dbo.DisplayErrorDetails(' || sqlcode || ',\'' || sqlerrm  || '\',\'' || sqlstate || '\')'; 
+        rs := (EXECUTE IMMEDIATE :statement);
+        RETURN table(rs);
+    END;
+END;
+$$
+;
 ```
