@@ -1,4 +1,4 @@
--- This script contains demo code for Module 5 of the Transact-SQL course
+-- This script contains demo code for Module 5 of the Snowflake SQL course
 
 
 
@@ -43,22 +43,10 @@ FROM SalesLT.Customer;
 
 -- Logical
 
--- IIF
+-- IFF
 SELECT AddressType, -- Evaluation       if True    if False    
-       IIF(AddressType = 'Main Office', 'Billing', 'Mailing') AS UseAddressFor
+       IFF(AddressType = 'Main Office', 'Billing', 'Mailing') AS UseAddressFor
 FROM SalesLT.CustomerAddress;
-
-
--- CHOOSE: NOT SUPPORTED
-
--- Prepare by updating status to a value between 1 and 5
---UPDATE SalesLT.SalesOrderHeader
---SET Status = SalesOrderID % 5 + 1;
---
----- Now use CHOOSE to map the status code to a value in a list
---SELECT SalesOrderID, Status,
---       CHOOSE(Status, 'Ordered', 'Confirmed', 'Shipped', 'Delivered', 'Completed') AS OrderStatus
---FROM SalesLT.SalesOrderHeader;
 
 
 
@@ -79,23 +67,6 @@ JOIN SalesLT.ProductCategory AS c
 ON p.ProductCategoryID = c.ProductcategoryID
 ORDER BY Category, RankByPrice;
 
-
-
--- ROWSET Functions: NOT SUPPORTED
-
--- Use OPENROWSET to retrieve external data
--- (Advanced option needs to be enabled to allow this)
---EXEC sp_configure 'show advanced options', 1;
---RECONFIGURE;
---GO
---EXEC sp_configure 'Ad Hoc Distributed Queries', 1; 
---RECONFIGURE;
---GO
----- Now we can use OPENROWSET to connect to an external data source and return a rowset
---SELECT a.*
---FROM OPENROWSET('SQLNCLI', 'Server=localhost\SQLEXPRESS;Trusted_Connection=yes;',
---     'SELECT Name, ListPrice
---     FROM adventureworks.SalesLT.Product') AS a;
 
 
 
@@ -127,7 +98,7 @@ SELECT PARSE_JSON($jsonCustomer):firstName;
 
 -- Aggregate functions and GROUP BY
 
--- Aggergate functions
+-- Aggregate functions
 SELECT COUNT(*) AS ProductCount,
        MIN(ListPrice) AS MinPrice,
        MAX(ListPrice) AS MaxPrice,
@@ -144,8 +115,8 @@ SELECT c.Name AS Category,
 FROM SalesLT.ProductCategory AS c
 JOIN SalesLT.Product AS p
     ON p.ProductCategoryID = c.ProductCategoryID
-GROUP BY c.Name -- (can't use alias because GROUP BY happens before SELECT)
-ORDER BY Category; -- (can use alias because ORDER BY happens after SELECT)
+GROUP BY Category
+ORDER BY Category;
 
 -- Filter aggregated groups
 -- How NOT to do it!
