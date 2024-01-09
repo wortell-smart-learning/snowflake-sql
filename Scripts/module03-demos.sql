@@ -1,4 +1,4 @@
--- This script contains demo code for Module 3 of the Transact-SQL course
+-- This script contains demo code for Module 3 of the Snowflake SQL course
 
 
 -- INNER joins
@@ -121,15 +121,6 @@ WHERE SalesOrderID =
 	 WHERE o2.CustomerID = o1.CustomerID)
 ORDER BY CustomerID, OrderDate;
 
--- Outer query: NOT SUPPORTED
---SELECT od.SalesOrderID, od.OrderQty,
---        -- Inner query
---        (SELECT Name
---         FROM SalesLT.Product AS p
---         --References alias in outer query
---         WHERE p.ProductID = od.ProductID) AS ProductName
---FROM SalesLT.SalesOrderDetail AS od
---ORDER BY od.SalesOrderID;
 
 -- Using EXISTS
 -- Outer query
