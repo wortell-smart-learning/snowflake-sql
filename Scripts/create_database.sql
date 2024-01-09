@@ -1,3 +1,5 @@
+CREATE OR REPLACE DATABASE adventureworkslt;
+
 USE adventureworkslt;
 
 CREATE OR REPLACE SCHEMA SalesLT;
