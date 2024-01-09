@@ -1,4 +1,4 @@
--- This script contains demo code for Module 1 of the Transact-SQL course
+-- This script contains demo code for Module 1 of the Snowflake SQL course
 
 
 -- BASIC QUERIES
@@ -23,7 +23,7 @@ FROM SalesLT.Customer;
 
 -- DATA TYPES
 
--- Try to combine incompatible data types (results in error)
+-- Try to combine different data types (implicitly converted by Snowflake)
 SELECT CustomerID || ':' || EmailAddress AS CustomerIdentifier
 FROM SalesLT.Customer;
 
@@ -31,7 +31,7 @@ FROM SalesLT.Customer;
 SELECT CAST(CustomerID AS varchar) || ':' || EmailAddress AS CustomerIdentifier
 FROM SalesLT.Customer;
 
--- Use convert
+-- Use shortcut
 SELECT CustomerID::varchar || ':' || EmailAddress AS CustomerIdentifier
 FROM SalesLT.Customer;
 
