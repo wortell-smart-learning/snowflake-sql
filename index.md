@@ -1,6 +1,6 @@
-# powerbi-training
+# Querying Snowflake with SQL
 
-Welkom bij de [Wortell Smart Learning](https://www.wortell.nl/nl/smart-learning) training "Power BI: Rapporten en Dashboards"!
+Welkom bij de [Wortell Smart Learning](https://www.wortell.nl/nl/smart-learning) training "Querying Snowflake with SQL"!
 
 Alle materialen voor deze training kun je hier [vinden]((https://github.com/wortell-smart-learning/snowflake-sql/).
 
