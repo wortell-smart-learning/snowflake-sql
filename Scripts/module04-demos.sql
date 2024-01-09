@@ -1,4 +1,4 @@
--- This script contains demo code for Module 5 of the Snowflake SQL course
+-- This script contains demo code for Module 4 of the Snowflake SQL course
 
 
 
