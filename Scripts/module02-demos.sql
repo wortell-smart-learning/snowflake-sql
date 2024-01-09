@@ -1,4 +1,4 @@
--- This script contains demo code for Module 2 of the Transact-SQL course
+-- This script contains demo code for Module 2 of the Snowflake SQL course
 
 
 -- ORDER BY
