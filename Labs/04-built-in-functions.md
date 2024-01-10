@@ -311,7 +311,7 @@ The product manager would like reports that include aggregated information about
 
 ## Volgende modules
 
-De volgende module is [Module 5: Modify Data](../05-modify-data.md). Hieronder vind je een overzicht van alle modules:
+De volgende module is [Module 5: Modify Data](./05-modify-data.md). Hieronder vind je een overzicht van alle modules:
 
 1. [Get Started with Snowflake SQL](./01-get-started-with-snowflake-sql.md)
 2. [Sort and Filter Query Results](./02-filter-sort.md)
