@@ -306,7 +306,7 @@ This section contains suggested solutions for the challenge queries.
 
 ## Volgende modules
 
-De volgende module is [Additional exercizes: Create queries with table expressions](./06-use-table-expressions.md). Hieronder vind je een overzicht van alle modules:
+De volgende module is [Additional exercises: Create queries with table expressions](./06-use-table-expressions.md). Hieronder vind je een overzicht van alle modules:
 
 1. [Get Started with Snowflake SQL](./01-get-started-with-snowflake-sql.md)
 2. [Sort and Filter Query Results](./02-filter-sort.md)
