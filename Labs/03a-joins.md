@@ -280,7 +280,7 @@ De volgende module is [Module 3b: Use Subqueries](./03b-subqueries.md). Hieronde
 3. [Query Multiple Tables with Joins](./03a-joins.md) (huidige module)
 4. [Use Subqueries](./03b-subqueries.md)
 5. [Use Built-in Functions](./04-built-in-functions.md)
-6. [Modify Data](../05-modify-data.md)
+6. [Modify Data](./05-modify-data.md)
 7. [Create queries with table expressions](./06-use-table-expressions.md)
 8. [Combine query results with set operators](./07-combine-query-results.md)
 9. [Use window functions](./08-create-window-query-functions.md)
