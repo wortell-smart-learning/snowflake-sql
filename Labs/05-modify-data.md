@@ -306,14 +306,14 @@ This section contains suggested solutions for the challenge queries.
 
 ## Volgende modules
 
-De volgende module is [Module 6: Create queries with table expressions](./06-use-table-expressions.md). Hieronder vind je een overzicht van alle modules:
+De volgende module is [Additional exercizes: Create queries with table expressions](./06-use-table-expressions.md). Hieronder vind je een overzicht van alle modules:
 
 1. [Get Started with Snowflake SQL](./01-get-started-with-snowflake-sql.md)
 2. [Sort and Filter Query Results](./02-filter-sort.md)
 3. [Query Multiple Tables with Joins](./03a-joins.md)
 4. [Use Subqueries](./03b-subqueries.md)
-5. [Use Built-in Functions](./04-built-in-functions.md) (huidige module)
-6. [Modify Data](./05-modify-data.md)
+5. [Use Built-in Functions](./04-built-in-functions.md)
+6. [Modify Data](./05-modify-data.md) (huidige module)
 7. [Create queries with table expressions](./06-use-table-expressions.md)
 8. [Combine query results with set operators](./07-combine-query-results.md)
 9. [Use window functions](./08-create-window-query-functions.md)
